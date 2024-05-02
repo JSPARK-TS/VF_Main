@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:main_ui/widgets/main_config_con_widget.dart';
+import 'package:main_ui/widgets/main_control_widget.dart';
 
 class MainModelInfo extends StatefulWidget {
   const MainModelInfo({super.key});
@@ -33,13 +35,13 @@ class _MainModelInfoState extends State<MainModelInfo> {
                 ),
               ),
             ),
-            SizedBox(
-              width: 400,
+            Expanded(
               child: _buildModelDropdown(),
             ),
           ],
         ),
-        _buildModelInfo()
+        _buildModelInfo(),
+        const Row(children: [MainControl(), MainConfigCon()])
       ],
     );
   }
@@ -47,11 +49,14 @@ class _MainModelInfoState extends State<MainModelInfo> {
   Widget _buildModelDropdown() {
 // 드롭다운 리스트
     List<String> dropDownList = [
-      '조오오노온오논ㄴ나게 길면 어떻게 할껀가 ?',
-      '후후후',
-      '삐삐삐',
-      '추추추',
-      '캬캬캭'
+      'korean no ?',
+      'korean no2 ?',
+      'korean no3 ?',
+      'korean no4 ?',
+      'korean no5 ?',
+      'korean no6 ?',
+      'korean no7 ?',
+      'korean no8 ?',
     ];
 
 // 초기값 설정
@@ -66,7 +71,11 @@ class _MainModelInfoState extends State<MainModelInfo> {
       items: dropDownList.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
-          child: Text(value),
+          child: Center(
+            child: Text(
+              value,
+            ),
+          ),
         );
       }).toList(),
 // 드롭다운의 값을 선택했을 경우

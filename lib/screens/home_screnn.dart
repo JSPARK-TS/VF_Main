@@ -16,46 +16,30 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          OKNG(),
+          Flexible(flex: 1, child: OKNG()),
           ResultWidget(),
+          SizedBox(
+            height: 30,
+          ),
           Padding(
-            padding: EdgeInsets.all(30.0),
+            padding: EdgeInsets.all(30),
             child: Row(
               children: [
-                SizedBox(
-                  height: 30,
-                ),
-                Column(
-                  children: [
-                    Flexible(
-                      flex: 1,
-                      child: Row(
-                        children: [
-                          MainModelInfo(),
-                          Column(
-                            children: [
-                              // MainControl(),
-                              // MainConfigCon(),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                    Flexible(
-                      flex: 1,
-                      child: Row(
-                        children: [
-                          Column(
-                            children: [
-                              // MainCheckerInfo(),
-                              // MainSystemLog(),
-                            ],
-                          )
-                        ],
-                      ),
-                    )
-                  ],
+                Flexible(
+                  child:
+                      MainModelInfo(),
+
+                  ),
+
+                Flexible(
+                  child: Column(
+                    children: [
+                      MainCheckerInfo(),
+                      MainSystemLog(),
+                    ],
+                  ),
                 )
               ],
             ),
