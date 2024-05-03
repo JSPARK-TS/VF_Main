@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:main_ui/widgets/main_checker_info_widget.dart';
-import 'package:main_ui/widgets/main_config_con_widget.dart';
-import 'package:main_ui/widgets/main_control_widget.dart';
 import 'package:main_ui/widgets/main_model_info_widget.dart';
 import 'package:main_ui/widgets/main_okng_widget.dart';
 import 'package:main_ui/widgets/main_result_widget.dart';
@@ -26,7 +24,11 @@ class HomeScreen extends StatelessWidget {
             child: Row(
               children: [
                 Flexible(
-                  child: MainModelInfo(),
+                  child: Column(
+                    children: [
+                      MainModelInfo(),
+                    ],
+                  ),
                 ),
                 Flexible(
                   child: Column(

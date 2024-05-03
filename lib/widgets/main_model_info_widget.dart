@@ -74,6 +74,7 @@ class _MainModelInfoState extends State<MainModelInfo> {
           child: Center(
             child: Text(
               value,
+              style: const TextStyle(fontSize: 20),
             ),
           ),
         );
