@@ -88,6 +88,7 @@ class _MainModelInfoState extends State<MainModelInfo> {
   }
 
   Widget _buildModelInfo() {
+    final scrollController = ScrollController();
     List<String> masterInfo = [
       "mMIN",
       "mTYP",
@@ -100,47 +101,145 @@ class _MainModelInfoState extends State<MainModelInfo> {
       "sMAX",
       "sDVF",
     ];
-    return DataTable(
-      columns: const [
-        DataColumn(
-          label: Text('구분'),
-        ),
-        DataColumn(label: Text('MIN')),
-        DataColumn(label: Text('TYP')),
-        DataColumn(label: Text('MAX')),
-        DataColumn(label: Text('DVF')),
-      ],
-      rows: [
-        DataRow(
-          cells: [
-            const DataCell(
-              Text(
-                'Master',
-                style: TextStyle(fontWeight: FontWeight.bold),
+    return Row(
+      children: [
+        DataTable(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.black.withOpacity(0.8),
+              width: 2,
+            ),
+          ),
+          headingRowColor:
+              MaterialStateColor.resolveWith((states) => Colors.grey.shade500),
+          columns: const [
+            DataColumn(
+              label: Text(
+                '구분',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            ...masterInfo.map<DataCell>((String value) {
-              return DataCell(
-                Text(value),
-              );
-            })
+          ],
+          rows: [
+            DataRow(
+              color: MaterialStateColor.resolveWith(
+                  (states) => Colors.grey.shade300),
+              cells: const [
+                DataCell(
+                  Text(
+                    'Master',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            DataRow(
+              color: MaterialStateColor.resolveWith(
+                  (states) => Colors.grey.shade300),
+              cells: const [
+                DataCell(
+                  Text(
+                    'Slave',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
-        DataRow(
-          cells: [
-            const DataCell(
-              Text(
-                'Slave',
-                style: TextStyle(fontWeight: FontWeight.bold),
+        Expanded(
+          child: Scrollbar(
+            controller: scrollController,
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                controller: scrollController,
+                scrollDirection: Axis.horizontal,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: constraints.minWidth),
+                  child: DataTable(
+                    //데이터 들어가는 데이터 테이블
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: Colors.black.withOpacity(0.8),
+                          width: 2,
+                        ),
+                        bottom: BorderSide(
+                          color: Colors.black.withOpacity(0.8),
+                          width: 2,
+                        ),
+                        right: BorderSide(
+                          color: Colors.black.withOpacity(0.8),
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    headingRowColor: MaterialStateColor.resolveWith(
+                        (states) => Colors.grey.shade500),
+                    columns: const [
+                      DataColumn(
+                          label: Text(
+                        'MIN',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
+                      DataColumn(
+                          label: Text(
+                        'TYP',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
+                      DataColumn(
+                          label: Text(
+                        'MAX',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
+                      DataColumn(
+                        label: Text(
+                          'DVF',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                    rows: [
+                      DataRow(
+                        color: MaterialStateColor.resolveWith(
+                            (states) => Colors.grey.shade100),
+                        cells: masterInfo.map<DataCell>((String value) {
+                          return DataCell(
+                            Text(value),
+                          );
+                        }).toList(),
+                      ),
+                      DataRow(
+                        color: MaterialStateColor.resolveWith(
+                            (states) => Colors.grey.shade100),
+                        cells: slaveInfo.map<DataCell>((String value) {
+                          return DataCell(
+                            Text(value),
+                          );
+                        }).toList(),
+                      )
+                    ],
+                  ),
+                ),
               ),
             ),
-            ...slaveInfo.map<DataCell>((String value) {
-              return DataCell(
-                Text(value),
-              );
-            })
-          ],
-        )
+          ),
+        ),
       ],
     );
   }

@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:main_ui/widgets/main_checker_info_widget.dart';
 import 'package:main_ui/widgets/main_config_con_widget.dart';
 import 'package:main_ui/widgets/main_control_widget.dart';
@@ -28,11 +26,8 @@ class HomeScreen extends StatelessWidget {
             child: Row(
               children: [
                 Flexible(
-                  child:
-                      MainModelInfo(),
-
-                  ),
-
+                  child: MainModelInfo(),
+                ),
                 Flexible(
                   child: Column(
                     children: [

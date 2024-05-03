@@ -158,10 +158,11 @@ class _ResultWidgetState extends State<ResultWidget> {
             SizedBox(
               child: DataTable(
                   border: TableBorder(
-                      verticalInside: BorderSide(
-                    color: Colors.black.withOpacity(0.8),
-                    width: 2,
-                  )),
+                    verticalInside: BorderSide(
+                      color: Colors.black.withOpacity(0.8),
+                      width: 2,
+                    ),
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: Colors.black.withOpacity(0.8),
