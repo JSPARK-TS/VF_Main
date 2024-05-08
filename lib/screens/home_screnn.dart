@@ -21,24 +21,41 @@ class HomeScreen extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.all(30),
-            child: Row(
-              children: [
-                Flexible(
-                  child: Column(
-                    children: [
-                      MainModelInfo(),
-                    ],
+            child: Expanded(
+              child: Row(
+                children: [
+                  Flexible(
+                    child: Column(
+                      children: [
+                        MainModelInfo(),
+                      ],
+                    ),
                   ),
-                ),
-                Flexible(
-                  child: Column(
-                    children: [
-                      MainCheckerInfo(),
-                      MainSystemLog(),
-                    ],
-                  ),
-                )
-              ],
+                  Flexible(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          '검사기 정보',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        MainCheckerInfo(),
+                        Text(
+                          '시스템 로그',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        MainSystemLog(),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           )
         ],
