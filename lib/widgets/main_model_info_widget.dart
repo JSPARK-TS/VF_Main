@@ -39,7 +39,10 @@ class _MainModelInfoState extends State<MainModelInfo> {
           ],
         ),
         _buildModelInfo(),
-        const Row(children: [MainControl(), MainConfigCon()])
+        const Row(children: [
+          MainControl(),
+          MainConfigCon(),
+        ])
       ],
     );
   }

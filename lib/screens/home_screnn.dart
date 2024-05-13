@@ -31,6 +31,9 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  SizedBox(
+                    width: 10,
+                  ),
                   Flexible(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
