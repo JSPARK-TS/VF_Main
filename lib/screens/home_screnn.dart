@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:main_ui/bloc/control_bloc.dart';
+import 'package:main_ui/bloc/model_bloc.dart';
 import 'package:main_ui/bloc/request_bloc.dart';
 import 'package:main_ui/bloc/result_bloc.dart';
 import 'package:main_ui/repository/check_result_repository.dart';
+import 'package:main_ui/repository/model_info_repository.dart';
 import 'package:main_ui/widgets/main_checker_info_widget.dart';
 import 'package:main_ui/widgets/main_model_info_widget.dart';
 import 'package:main_ui/widgets/main_okng_widget.dart';
@@ -20,6 +22,12 @@ class HomeScreen extends StatelessWidget {
         RepositoryProvider<ResultRepository>(
           create: (context) => ResultRepositoryDummyImpl(),
         ),
+        RepositoryProvider<ModelInfoRepository>(
+          create: (context) => ModelInfoRepositoryDummyImpl(),
+        ),
+        RepositoryProvider<ModelNameRepository>(
+          create: (context) => ModelNameRepositoryDummyImpl(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -28,12 +36,17 @@ class HomeScreen extends StatelessWidget {
           ),
           BlocProvider<RequestBloc>(
             create: (BuildContext context) => RequestBloc(
-                repository: context.read<ResultRepository>(),
-                controlBloc: context.read<ControlBloc>()),
+              repository: context.read<ResultRepository>(),
+            ),
           ),
           BlocProvider<ResultBloc>(
-            create: (BuildContext context) =>
-                ResultBloc(controlBloc: context.read<ControlBloc>()),
+            create: (BuildContext context) => ResultBloc(),
+          ),
+          BlocProvider<ModelBloc>(
+            create: (BuildContext context) => ModelBloc(
+              infoRepository: context.read<ModelInfoRepository>(),
+              nameRepository: context.read<ModelNameRepository>(),
+            ),
           ),
         ],
         child: MultiBlocListener(

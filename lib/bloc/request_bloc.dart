@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:main_ui/bloc/control_bloc.dart';
 import 'package:main_ui/repository/check_result_repository.dart';
 
 class RequestEvent {}
@@ -19,11 +18,8 @@ class RequestResponse extends RequestState {
 class RequestBloc extends Bloc<RequestEvent, RequestState> {
   final ResultRepository repository;
 
-  final ControlBloc controlBloc;
-
   RequestBloc({
     required this.repository,
-    required this.controlBloc,
   }) : super(RequestState()) {
     on<RequestEvent>(onRequest);
   }
@@ -32,6 +28,5 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
     var masterResult = await repository.masterResult();
     var slaveResult = await repository.slaveResult();
     emit(RequestResponse(masterResult: masterResult, slaveResult: slaveResult));
-    
   }
 }
