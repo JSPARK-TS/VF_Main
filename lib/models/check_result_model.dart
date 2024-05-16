@@ -1,12 +1,12 @@
 class CheckResult {
   final int chNum;
-  final double result;
-  final bool okNG;
+  final double value;
+  final bool result;
 
   CheckResult({
     required this.chNum,
+    required this.value,
     required this.result,
-    required this.okNG,
   });
 }
 

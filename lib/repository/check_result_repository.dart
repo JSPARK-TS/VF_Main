@@ -24,8 +24,8 @@ class ResultRepositoryDummyImpl implements ResultRepository {
       },
       {
         'chNum': 2,
-        'value': 100.2,
-        'result': true,
+        'value': 999.9,
+        'result': false,
       },
       {
         'chNum': 3,
@@ -134,7 +134,7 @@ class ResultRepositoryDummyImpl implements ResultRepository {
       },
       {
         'chNum': 24,
-        'value': 100.2,
+        'value': 120.2,
         'result': false,
       },
     ];
@@ -148,20 +148,25 @@ class ResultRepositoryDummyImpl implements ResultRepository {
 
     var masterList = res.sublist(0, halfLength);
 
-    dynamic masterMax = masterList
-        .map((e) => e['value'])
-        .toList()
-        .reduce((value, next) => value > next ? value : next);
-    dynamic masterMin = masterList
-        .map((e) => e['value'])
-        .toList()
-        .reduce((value, next) => value < next ? value : next);
+    var values = masterList.map((e) => e['value']);
 
-    bool shortValue = masterList.any((e) => e.containsValue(false));
+    double masterMax =
+        values.reduce((value, next) => value > next ? value : next);
+    double masterMin =
+        values.reduce((value, next) => value < next ? value : next);
 
-    Map<String, bool> short = {"short": !shortValue};
+    String shortValue;
+    if (masterList.every((e) => !e['result'] == true)) {
+      shortValue = 'OK';
+    } else {
+      shortValue = 'NG';
+    }
 
-    Map<String, int> masterDvf = {"DVF": masterMax - masterMin};
+    Map<String, String> masterDvf = {
+      "DVF": (masterMax - masterMin).toStringAsFixed(2)
+    };
+
+    Map<String, String> short = {"short": shortValue};
 
     masterList.addAll([masterDvf, short]);
 
@@ -174,25 +179,38 @@ class ResultRepositoryDummyImpl implements ResultRepository {
 
     int halfLength = res.length ~/ 2;
 
-    var slaveList = res.sublist(0, halfLength);
+    var slaveList = res.sublist(halfLength, res.length);
 
-    dynamic masterMax = slaveList
-        .map((e) => e['value'])
-        .toList()
-        .reduce((value, next) => value > next ? value : next);
-    dynamic masterMin = slaveList
-        .map((e) => e['value'])
-        .toList()
-        .reduce((value, next) => value < next ? value : next);
+    var values = slaveList.map((e) => e['value']);
 
-    bool shortValue = slaveList.any((e) => e.containsValue(false));
+    double slaveMax =
+        values.reduce((value, next) => value > next ? value : next);
+    double slaveMin =
+        values.reduce((value, next) => value < next ? value : next);
 
-    Map<String, bool> short = {"short": !shortValue};
+    String shortValue;
+    if (slaveList.every((e) => e['result'] == true)) {
+      shortValue = 'OK';
+    } else {
+      shortValue = 'NG';
+    }
 
-    Map<String, int> masterDvf = {"DVF": masterMax - masterMin};
+    Map<String, String> short = {"short": shortValue};
 
-    slaveList.addAll([masterDvf, short]);
+    Map<String, String> slaveDvf = {
+      "DVF": (slaveMax - slaveMin).toStringAsFixed(2)
+    };
+
+    slaveList.addAll([slaveDvf, short]);
 
     return slaveList;
+  }
+
+  Future<bool> okNgResult() async {
+    var res = await resResult();
+
+    bool value = res.every((e) => e['result'] == true);
+
+    return value;
   }
 }

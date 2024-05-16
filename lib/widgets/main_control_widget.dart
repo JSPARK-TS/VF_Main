@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:main_ui/bloc/control_bloc.dart';
+import 'package:main_ui/bloc/request_bloc.dart';
 
 class MainControl extends StatelessWidget {
   const MainControl({super.key});
@@ -26,7 +29,12 @@ class MainControl extends StatelessWidget {
                     style: ButtonStyle(
                         backgroundColor:
                             MaterialStatePropertyAll(Colors.green.shade300)),
-                    onPressed: () {},
+                    onPressed: () {
+                      //외부 스위치가 연결 되었으면
+                      // context.read<ControlBloc>().add(RunEvent());
+                      // 외부 스위치가 연결 안되었으면
+                      context.read<RequestBloc>().add(RequestEvent());
+                    },
                     child: const Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: Text(
@@ -47,7 +55,9 @@ class MainControl extends StatelessWidget {
                     style: ButtonStyle(
                         backgroundColor:
                             MaterialStatePropertyAll(Colors.red.shade300)),
-                    onPressed: () {},
+                    onPressed: () {
+                      context.read<ControlBloc>().add(StopEvent());
+                    },
                     child: const Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: Text(

@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:main_ui/bloc/control_bloc.dart';
+import 'package:main_ui/bloc/request_bloc.dart';
+import 'package:main_ui/bloc/result_bloc.dart';
+import 'package:main_ui/repository/check_result_repository.dart';
 import 'package:main_ui/widgets/main_checker_info_widget.dart';
 import 'package:main_ui/widgets/main_model_info_widget.dart';
 import 'package:main_ui/widgets/main_okng_widget.dart';
@@ -10,58 +15,118 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Flexible(flex: 1, child: OKNG()),
-          ResultWidget(),
-          SizedBox(
-            height: 30,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<ResultRepository>(
+          create: (context) => ResultRepositoryDummyImpl(),
+        ),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<ControlBloc>(
+            create: (BuildContext context) => ControlBloc(),
           ),
-          Padding(
-            padding: EdgeInsets.all(30),
-            child: Expanded(
-              child: Row(
-                children: [
-                  Flexible(
-                    child: Column(
-                      children: [
-                        MainModelInfo(),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Flexible(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          '검사기 정보',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        MainCheckerInfo(),
-                        Text(
-                          '시스템 로그',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        MainSystemLog(),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          )
+          BlocProvider<RequestBloc>(
+            create: (BuildContext context) => RequestBloc(
+                repository: context.read<ResultRepository>(),
+                controlBloc: context.read<ControlBloc>()),
+          ),
+          BlocProvider<ResultBloc>(
+            create: (BuildContext context) =>
+                ResultBloc(controlBloc: context.read<ControlBloc>()),
+          ),
         ],
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<RequestBloc, RequestState>(
+              listener: (context, state) {
+                // 요청 결과 값이 생기면
+                if (state is RequestResponse) {
+                  context.read<ResultBloc>().add(ResultResponse(
+                      masterResult: state.masterResult,
+                      slaveResult: state.slaveResult));
+                  if (state.masterResult[state.masterResult.length - 1]
+                              ['short'] ==
+                          'OK' &&
+                      state.slaveResult[state.slaveResult.length - 1]
+                              ['short'] ==
+                          'OK') {
+                    context.read<ControlBloc>().add(OkEvent());
+                  } else if (!(state.masterResult[state.masterResult.length - 1]
+                              ['short'] ==
+                          'OK' &&
+                      state.slaveResult[state.slaveResult.length - 1]
+                              ['short'] ==
+                          'OK')) {
+                    context.read<ControlBloc>().add(NgEvent());
+                  }
+                }
+              },
+            ),
+            BlocListener<ResultBloc, CheckResultState>(
+              listener: (context, state) {
+                //결과 reset 값을 입력시 Ready 상태로 변경
+                if (state is ResultReset) {
+                  context.read<ControlBloc>().add(RunEvent());
+                }
+              },
+            ),
+          ],
+          child: Scaffold(
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Flexible(flex: 1, child: OKNG()),
+                ResultWidget(),
+                const SizedBox(
+                  height: 30,
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(30),
+                  child: Expanded(
+                    child: Row(
+                      children: [
+                        Flexible(
+                          child: Column(
+                            children: [
+                              MainModelInfo(),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Flexible(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                '검사기 정보',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              MainCheckerInfo(),
+                              Text(
+                                '시스템 로그',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              MainSystemLog(),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
