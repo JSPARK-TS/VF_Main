@@ -41,3 +41,19 @@ class ControlNg extends ControlState {
           text: "NG",
         );
 }
+
+class ControlRun extends ControlState {
+  ControlRun()
+      : super(
+          color: (const Color.fromARGB(255, 189, 189, 189)),
+          text: "Run",
+        );
+}
+
+class ControlReset extends ControlState {
+  ControlReset()
+      : super(
+          color: (const Color.fromARGB(255, 189, 189, 189)),
+          text: "Reset",
+        );
+}

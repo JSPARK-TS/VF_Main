@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:main_ui/bloc/checker_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainCheckerInfo extends StatefulWidget {
   const MainCheckerInfo({super.key});
@@ -8,46 +12,115 @@ class MainCheckerInfo extends StatefulWidget {
 }
 
 class _MainCheckerInfoState extends State<MainCheckerInfo> {
-  // 전체 시간 및 검사 시간 상태 관리를 위한 변수
-  String totalTime = "20:00:00";
-  String checkTime = "00:00:02";
+  String format(int seconds) {
+    var duration = Duration(seconds: seconds);
+    return duration.toString().substring(0, 7);
+  }
 
-  // NG 카운트 상태 관리를 위한 변수
-  int totalCount = 1532;
-  int ngCount = 5;
+  Timer? _totalTimer;
+  Timer? _cycleTimer;
+
+  bool _isTimerActive = false;
+  bool _isCycleTimerActive = false;
+
+  void incrementTotalCounter() {
+    if (!_isTimerActive) {
+      _totalTimer = Timer.periodic(
+        const Duration(seconds: 1),
+        (timer) {
+          totalTime++;
+        },
+      );
+      _isTimerActive = true;
+    }
+  }
+
+  void incrementCycleCounter() {
+    if (!_isCycleTimerActive) {
+      _cycleTimer = Timer.periodic(
+        const Duration(seconds: 1),
+        (timer) {
+          cycleTime++;
+        },
+      );
+      _isTimerActive = true;
+    }
+  }
+
+  void pauseTotalTimer() {
+    if (_isTimerActive) {
+      _totalTimer?.cancel();
+      _isTimerActive = false;
+    }
+  }
+
+  void pauseCycleTimer() {
+    if (_isCycleTimerActive) {
+      _cycleTimer?.cancel();
+      _isCycleTimerActive = false;
+    }
+  }
+
+  late int totalTime = 0;
+
+  late int cycleTime = 0;
+
+  late int totalCount = 0;
+
+  late int ngCount = 0;
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _cycleTime(totalTime: totalTime, checkTime: checkTime),
-        resetButton(() {
-          setState(() {
-            totalTime = "00:00:00";
-            checkTime = "00:00:00";
-          });
-        }),
-        _totalNgCount(total: totalCount, ng: ngCount),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+    // NG 카운트 상태 관리를 위한 변수
+    return BlocBuilder<CheckerBloc, CheckerState>(
+      builder: (context, state) {
+        if (state is CheckerNgCount) {
+          ngCount++;
+        } else if (state is CheckerTotalCount) {
+          cycleTime = 0;
+          incrementTotalCounter();
+          incrementCycleCounter();
+          totalCount++;
+        } else if (state is CheckerCountReset) {
+          totalCount = 0;
+          ngCount = 0;
+        } else if (state is CheckerTimeReset) {
+          totalTime = 0;
+          cycleTime = 0;
+        } else if (state is CheckerCycleTime) {
+          pauseCycleTimer();
+        } else if (state is CheckerPause) {
+          pauseTotalTimer();
+          pauseCycleTimer();
+        }
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _cycleTime(
+                totalTime: totalTime, checkTime: cycleTime, state: state),
             resetButton(() {
-              setState(() {
-                totalCount = 0;
-                ngCount = 0;
-              });
+              BlocProvider.of<CheckerBloc>(context).add(TimeReset());
             }),
-            const SizedBox(
-              height: 10,
+            _totalNgCount(total: totalCount, ng: ngCount, state: state),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                resetButton(() {
+                  BlocProvider.of<CheckerBloc>(context).add(CountReset());
+                }),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                    "${ngCount == 0 ? "0" : (ngCount / totalCount * 100).toStringAsFixed(2)}%"),
+              ],
             ),
-            Text(
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                "${ngCount == 0 ? "0" : (ngCount / totalCount * 100).toStringAsFixed(2)}%"),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -65,10 +138,8 @@ class _MainCheckerInfoState extends State<MainCheckerInfo> {
     );
   }
 
-  
 //class로 수정
-
-  Widget _cycleTime({required totalTime, required checkTime}) {
+  Widget _cycleTime({required totalTime, required checkTime, required state}) {
     return Column(
       children: [
         Row(
@@ -103,7 +174,7 @@ class _MainCheckerInfoState extends State<MainCheckerInfo> {
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Text(
-                  totalTime,
+                  format(totalTime),
                   style: const TextStyle(fontSize: 20),
                   textAlign: TextAlign.center,
                 ),
@@ -143,7 +214,7 @@ class _MainCheckerInfoState extends State<MainCheckerInfo> {
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Text(
-                  checkTime,
+                  format(checkTime),
                   style: const TextStyle(fontSize: 20),
                   textAlign: TextAlign.center,
                 ),
@@ -155,7 +226,7 @@ class _MainCheckerInfoState extends State<MainCheckerInfo> {
     );
   }
 
-  Widget _totalNgCount({required total, required ng}) {
+  Widget _totalNgCount({required total, required ng, required state}) {
     return Column(
       children: [
         Row(

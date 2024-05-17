@@ -15,6 +15,13 @@ class RequestResponse extends RequestState {
   });
 }
 
+class RequestLoading extends RequestState {}
+
+class RequestError extends RequestState {
+  String erorr;
+  RequestError(this.erorr);
+}
+
 class RequestBloc extends Bloc<RequestEvent, RequestState> {
   final ResultRepository repository;
 
@@ -25,8 +32,14 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
   }
 
   void onRequest(RequestEvent event, emit) async {
-    var masterResult = await repository.masterResult();
-    var slaveResult = await repository.slaveResult();
-    emit(RequestResponse(masterResult: masterResult, slaveResult: slaveResult));
+    emit(RequestLoading());
+    try {
+      var masterResult = await repository.masterResult();
+      var slaveResult = await repository.slaveResult();
+      emit(RequestResponse(
+          masterResult: masterResult, slaveResult: slaveResult));
+    } catch (e) {
+      emit(RequestError(e.toString()));
+    }
   }
 }

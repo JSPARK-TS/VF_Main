@@ -25,14 +25,18 @@ class ModelBloc extends Bloc<ModelEvent, ModelState> {
     emit(ModelLoading());
     try {
       _modelNames = await nameRepository.resModelNames();
-      emit(ModelListAndInfoState(modelNames: _modelNames));
+      final selectedModelInfo =
+          //모델의 첫번째 값으로 되어 있으나 마지막 값을 가지고 있어야 함.
+          await infoRepository.resModelInfo(_modelNames.first);
+      // 모델 정보를 로드한 후, 모델 이름 목록과 함께 상태를 업데이트합니다.
+      emit(ModelListAndInfoState(
+          modelNames: _modelNames, selectedModelInfo: selectedModelInfo));
     } catch (e) {
       emit(ModelError(e.toString()));
     }
   }
 
   void _onLoadModelInfo(LoadModelInfo event, Emitter<ModelState> emit) async {
-    emit(ModelLoading());
     try {
       final selectedModelInfo =
           await infoRepository.resModelInfo(event.modelName);

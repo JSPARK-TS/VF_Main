@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:main_ui/bloc/control_bloc.dart';
@@ -84,17 +82,16 @@ class _MainModelInfoState extends State<MainModelInfo> {
             ),
           );
         }).toList(),
-        onChanged: (String? value) {
-          // value가 null이 아닌 경우에만 실행합니다.
-          if (value != null) {
-            setState(() {
-              dropDownValue = value; // 여기서는 value가 null이 아니라는 것이 보장됩니다.
-            });
-            context.read<ModelBloc>().add(
-                  LoadModelInfo(value),
-                );
-          }
-        },
+        onChanged: (controlState is ControlRun)
+            ? null
+            : (String? value) {
+                if (value != null) {
+                  dropDownValue = value;
+                  context.read<ModelBloc>().add(
+                        LoadModelInfo(value),
+                      );
+                }
+              },
       );
     }
     return const Text("Loading...");
@@ -102,9 +99,25 @@ class _MainModelInfoState extends State<MainModelInfo> {
 
   Widget _buildModelInfo(state) {
     final scrollController = ScrollController();
+    var mList = [];
+    var sList = [];
     if (state is ModelListAndInfoState) {
-      List<Map<String, dynamic>> masterInfo = state.selectedModelInfo;
-      List<Map<String, dynamic>> slaveInfo = state.selectedModelInfo;
+      for (Map<String, dynamic> model in state.selectedModelInfo) {
+        Map<String, dynamic> mModel = {
+          'mMin': model['mMin'],
+          'mTYP': model['mTYP'],
+          'mMax': model['mMax'],
+          'mDVF': model['mDVF'],
+        };
+        Map<String, dynamic> sModel = {
+          'sMin': model['sMin'],
+          'sTYP': model['sTYP'],
+          'sMax': model['sMax'],
+          'sDVF': model['sDVF'],
+        };
+        mList.add(mModel);
+        sList.add(sModel);
+      }
       return Row(
         children: [
           DataTable(
@@ -218,31 +231,31 @@ class _MainModelInfoState extends State<MainModelInfo> {
                           ),
                         ),
                       ],
-                      rows: const [
-                        // DataRow(
-                        //   color: MaterialStateColor.resolveWith(
-                        //       (states) => Colors.grey.shade100),
-                        //   cells: masterInfo.expand<DataCell>((map) {
-                        //     // map.values.toList()를 통해 맵의 모든 값을 리스트로 변환합니다.
-                        //     // 그리고 이 값을 DataCell로 매핑합니다.
-                        //     return map.values.map<DataCell>((value) {
-                        //       return DataCell(Text(
-                        //           value.toString())); // 모든 값을 문자열로 변환해야 합니다.
-                        //     });
-                        //   }).toList(), // expand 메서드는 Iterable을 반환하므로, toList()로 리스트로 변환합니다.
-                        // ),
-                        // DataRow(
-                        //   color: MaterialStateColor.resolveWith(
-                        //       (states) => Colors.grey.shade100),
-                        //   cells: slaveInfo.expand<DataCell>((map) {
-                        //     // map.values.toList()를 통해 맵의 모든 값을 리스트로 변환합니다.
-                        //     // 그리고 이 값을 DataCell로 매핑합니다.
-                        //     return map.values.map<DataCell>((value) {
-                        //       return DataCell(Text(
-                        //           value.toString())); // 모든 값을 문자열로 변환해야 합니다.
-                        //     });
-                        //   }).toList(), // expand 메서드는 Iterable을 반환하므로, toList()로 리스트로 변환합니다.
-                        // ),
+                      rows: [
+                        DataRow(
+                          color: MaterialStateColor.resolveWith(
+                              (states) => Colors.grey.shade100),
+                          cells: mList.expand<DataCell>((map) {
+                            // map.values.toList()를 통해 맵의 모든 값을 리스트로 변환합니다.
+                            // 그리고 이 값을 DataCell로 매핑합니다.
+                            return map.values.map<DataCell>((value) {
+                              return DataCell(Text(
+                                  value.toString())); // 모든 값을 문자열로 변환해야 합니다.
+                            });
+                          }).toList(), // expand 메서드는 Iterable을 반환하므로, toList()로 리스트로 변환합니다.
+                        ),
+                        DataRow(
+                          color: MaterialStateColor.resolveWith(
+                              (states) => Colors.grey.shade100),
+                          cells: sList.expand<DataCell>((map) {
+                            // map.values.toList()를 통해 맵의 모든 값을 리스트로 변환합니다.
+                            // 그리고 이 값을 DataCell로 매핑합니다.
+                            return map.values.map<DataCell>((value) {
+                              return DataCell(Text(
+                                  value.toString())); // 모든 값을 문자열로 변환해야 합니다.
+                            });
+                          }).toList(), // expand 메서드는 Iterable을 반환하므로, toList()로 리스트로 변환합니다.
+                        ),
                       ],
                     ),
                   ),

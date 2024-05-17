@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:main_ui/bloc/checker_bloc.dart';
 import 'package:main_ui/bloc/control_bloc.dart';
 import 'package:main_ui/bloc/model_bloc.dart';
 import 'package:main_ui/bloc/request_bloc.dart';
@@ -48,13 +49,25 @@ class HomeScreen extends StatelessWidget {
               nameRepository: context.read<ModelNameRepository>(),
             ),
           ),
+          BlocProvider<CheckerBloc>(
+            create: (BuildContext context) => CheckerBloc(),
+          )
         ],
         child: MultiBlocListener(
           listeners: [
+            BlocListener<ControlBloc, ControlState>(listener: (context, state) {
+              if (state is RunEvent) {
+                context.read<RequestBloc>().add(RequestEvent());
+              }
+            }),
             BlocListener<RequestBloc, RequestState>(
               listener: (context, state) {
+                if (state is RequestLoading) {
+                  context.read<ControlBloc>().add(RunEvent());
+                }
                 // 요청 결과 값이 생기면
                 if (state is RequestResponse) {
+                  context.read<CheckerBloc>().add(TotalCountIncrease());
                   context.read<ResultBloc>().add(ResultResponse(
                       masterResult: state.masterResult,
                       slaveResult: state.slaveResult));
@@ -65,6 +78,7 @@ class HomeScreen extends StatelessWidget {
                               ['short'] ==
                           'OK') {
                     context.read<ControlBloc>().add(OkEvent());
+                    context.read<CheckerBloc>().add(CycleTime());
                   } else if (!(state.masterResult[state.masterResult.length - 1]
                               ['short'] ==
                           'OK' &&
@@ -72,6 +86,8 @@ class HomeScreen extends StatelessWidget {
                               ['short'] ==
                           'OK')) {
                     context.read<ControlBloc>().add(NgEvent());
+                    context.read<CheckerBloc>().add(CycleTime());
+                    context.read<CheckerBloc>().add(NgCountIncrease());
                   }
                 }
               },
@@ -79,11 +95,19 @@ class HomeScreen extends StatelessWidget {
             BlocListener<ResultBloc, CheckResultState>(
               listener: (context, state) {
                 //결과 reset 값을 입력시 Ready 상태로 변경
-                if (state is ResultReset) {
-                  context.read<ControlBloc>().add(RunEvent());
+                if (state is Init) {
+                  context.read<ControlBloc>().add(ResetEvent());
                 }
               },
             ),
+            BlocListener<ControlBloc, ControlState>(
+              listener: (context, state) {
+                //결과 reset 값을 입력시 Ready 상태로 변경
+                if (state is ControlStop) {
+                  context.read<CheckerBloc>().add(Pause());
+                }
+              },
+            )
           ],
           child: Scaffold(
             body: Column(

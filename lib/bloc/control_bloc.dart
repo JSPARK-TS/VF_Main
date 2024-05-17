@@ -9,7 +9,9 @@ class ControlBloc extends Bloc<ControlEvent, ControlState> {
     on<OkEvent>(onOk);
     on<NgEvent>(onNG);
     on<StopEvent>(onStopClick);
-    on<RunEvent>(onRunClick);
+    on<StartEvent>(onRunClick);
+    on<RunEvent>(onRun);
+    on<ResetEvent>(onReset);
   }
 
   void onOk(event, emit) {
@@ -31,5 +33,13 @@ class ControlBloc extends Bloc<ControlEvent, ControlState> {
     //신호가 감지 되면
     //RequstBloc.add(RequestEvent()) 실행
     emit(ControlReady());
+  }
+
+  void onRun(event, emit) {
+    emit(ControlRun());
+  }
+
+  void onReset(event, emit) {
+    emit(ControlReset());
   }
 }
