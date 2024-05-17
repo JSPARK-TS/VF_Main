@@ -74,22 +74,27 @@ class _MainCheckerInfoState extends State<MainCheckerInfo> {
     // NG 카운트 상태 관리를 위한 변수
     return BlocBuilder<CheckerBloc, CheckerState>(
       builder: (context, state) {
-        if (state is CheckerNgCount) {
-          ngCount++;
-        } else if (state is CheckerTotalCount) {
+        if (state is CheckerTotalCount) {
           cycleTime = 0;
+          totalCount++;
           incrementTotalCounter();
           incrementCycleCounter();
-          totalCount++;
-        } else if (state is CheckerCountReset) {
+        }
+        if (state is CheckerNgCount) {
+          ngCount++;
+        }
+        if (state is CheckerCountReset) {
           totalCount = 0;
           ngCount = 0;
-        } else if (state is CheckerTimeReset) {
+        }
+        if (state is CheckerTimeReset) {
           totalTime = 0;
           cycleTime = 0;
-        } else if (state is CheckerCycleTime) {
+        }
+        if (state is CheckerCycleTime) {
           pauseCycleTimer();
-        } else if (state is CheckerPause) {
+        }
+        if (state is CheckerPause) {
           pauseTotalTimer();
           pauseCycleTimer();
         }

@@ -86,8 +86,6 @@ class HomeScreen extends StatelessWidget {
                               ['short'] ==
                           'OK')) {
                     context.read<ControlBloc>().add(NgEvent());
-                    context.read<CheckerBloc>().add(CycleTime());
-                    context.read<CheckerBloc>().add(NgCountIncrease());
                   }
                 }
               },
@@ -102,12 +100,19 @@ class HomeScreen extends StatelessWidget {
             ),
             BlocListener<ControlBloc, ControlState>(
               listener: (context, state) {
-                //결과 reset 값을 입력시 Ready 상태로 변경
                 if (state is ControlStop) {
                   context.read<CheckerBloc>().add(Pause());
+                } else if (state is ControlNg) {
+                  context.read<CheckerBloc>().add(CycleTime());
+                  context.read<CheckerBloc>().add(NgCountIncrease());
                 }
               },
-            )
+            ),
+            BlocListener<CheckerBloc, CheckerState>(
+              listener: (context, state) {
+                print(state);
+              },
+            ),
           ],
           child: Scaffold(
             body: Column(
